@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 const (
@@ -20,16 +22,41 @@ func main() {
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Println("=== Number Guessing Game ===")
-	fmt.Printf("I'm thinking of a number between %d and %d.\n", minNumber, maxNumber)
-	fmt.Printf("You have %d guesses. Good luck!\n\n", maxGuesses)
+	titleStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("205")).
+		Bold(true).
+		Padding(1, 2)
+
+	instructionStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("86"))
+
+	fmt.Println(titleStyle.Render("🎮 Number Guessing Game"))
+	fmt.Println(instructionStyle.Render(
+		fmt.Sprintf("I'm thinking of a number between %d and %d.\n"+
+			"You have %d guesses. Good luck!\n", minNumber, maxNumber, maxGuesses)))
+	fmt.Println()
 
 	target := rng.Intn(maxNumber-minNumber+1) + minNumber
 	guesses := 0
 
+	promptStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("226")).
+		Bold(true)
+
+	successStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("46")).
+		Bold(true)
+	lowStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("208"))
+	highStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("33"))
+	loseStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("196")).
+		Bold(true)
+
 	for guesses < maxGuesses {
 		remaining := maxGuesses - guesses
-		fmt.Printf("Guess %d/%d: ", guesses+1, maxGuesses)
+		fmt.Print(promptStyle.Render(fmt.Sprintf("Guess %d/%d: ", guesses+1, maxGuesses)))
 
 		if !scanner.Scan() {
 			break
@@ -38,12 +65,14 @@ func main() {
 		input := strings.TrimSpace(scanner.Text())
 		guess, err := strconv.Atoi(input)
 		if err != nil {
-			fmt.Println("Please enter a valid number.")
+			errStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+			fmt.Println(errStyle.Render("❌ Please enter a valid number."))
 			continue
 		}
 
 		if guess < minNumber || guess > maxNumber {
-			fmt.Printf("Please enter a number between %d and %d.\n", minNumber, maxNumber)
+			errStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+			fmt.Println(errStyle.Render(fmt.Sprintf("❌ Please enter a number between %d and %d.", minNumber, maxNumber)))
 			continue
 		}
 
@@ -51,13 +80,13 @@ func main() {
 
 		switch {
 		case guess == target:
-			fmt.Printf("\nCorrect! The number was %d.\n", target)
-			fmt.Printf("You got it in %d guess(es)!\n", guesses)
+			fmt.Println(successStyle.Render(fmt.Sprintf("\n✅ Correct! The number was %d.", target)))
+			fmt.Println(successStyle.Render(fmt.Sprintf("🎉 You got it in %d guess(es)!", guesses)))
 			return
 		case guess < target:
-			fmt.Printf("Too low!")
+			fmt.Print(lowStyle.Render("📉 Too low!"))
 		default:
-			fmt.Printf("Too high!")
+			fmt.Print(highStyle.Render("📈 Too high!"))
 		}
 
 		if remaining-1 > 0 {
@@ -67,5 +96,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("\nOut of guesses! The number was %d.\n", target)
+	fmt.Println(loseStyle.Render(fmt.Sprintf("\n☠️  Out of guesses! The number was %d.", target)))
 }
