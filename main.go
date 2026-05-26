@@ -23,12 +23,12 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	titleStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("205")).
+		Foreground(lipgloss.Color("205")). // Magenta
 		Bold(true).
 		Padding(1, 2)
 
 	instructionStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("86"))
+		Foreground(lipgloss.Color("86")) // Cyan
 
 	fmt.Println(titleStyle.Render("🎮 Number Guessing Game"))
 	fmt.Println(instructionStyle.Render(
@@ -40,18 +40,18 @@ func main() {
 	guesses := 0
 
 	promptStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("226")).
+		Foreground(lipgloss.Color("226")). // Yellow
 		Bold(true)
 
 	successStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("46")).
+		Foreground(lipgloss.Color("46")). // Bright green
 		Bold(true)
 	lowStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("208"))
+		Foreground(lipgloss.Color("208")) // Orange
 	highStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("33"))
+		Foreground(lipgloss.Color("33")) // Blue
 	loseStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("196")).
+		Foreground(lipgloss.Color("196")). // Bright red
 		Bold(true)
 
 	for guesses < maxGuesses {
