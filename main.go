@@ -18,6 +18,31 @@ const (
 	maxGuesses = 7
 )
 
+type GuessResult int
+
+const (
+	TooLow GuessResult = iota
+	TooHigh
+	Correct
+)
+
+func validateGuess(guess int) error {
+	if guess < minNumber || guess > maxNumber {
+		return fmt.Errorf("please enter a number between %d and %d", minNumber, maxNumber)
+	}
+	return nil
+}
+
+func checkGuess(guess, target int) GuessResult {
+	if guess == target {
+		return Correct
+	}
+	if guess < target {
+		return TooLow
+	}
+	return TooHigh
+}
+
 func main() {
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	scanner := bufio.NewScanner(os.Stdin)
@@ -70,22 +95,23 @@ func main() {
 			continue
 		}
 
-		if guess < minNumber || guess > maxNumber {
+		if err := validateGuess(guess); err != nil {
 			errStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
-			fmt.Println(errStyle.Render(fmt.Sprintf("❌ Please enter a number between %d and %d.", minNumber, maxNumber)))
+			fmt.Println(errStyle.Render("❌ " + err.Error()))
 			continue
 		}
 
 		guesses++
 
-		switch {
-		case guess == target:
+		result := checkGuess(guess, target)
+		switch result {
+		case Correct:
 			fmt.Println(successStyle.Render(fmt.Sprintf("\n✅ Correct! The number was %d.", target)))
 			fmt.Println(successStyle.Render(fmt.Sprintf("🎉 You got it in %d guess(es)!", guesses)))
 			return
-		case guess < target:
+		case TooLow:
 			fmt.Print(lowStyle.Render("📉 Too low!"))
-		default:
+		case TooHigh:
 			fmt.Print(highStyle.Render("📈 Too high!"))
 		}
 
@@ -97,4 +123,8 @@ func main() {
 	}
 
 	fmt.Println(loseStyle.Render(fmt.Sprintf("\n☠️  Out of guesses! The number was %d.", target)))
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading input: %v\n", err)
+	}
 }
