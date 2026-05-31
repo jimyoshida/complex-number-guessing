@@ -2,7 +2,7 @@
 
 BINARY_NAME=complex-number-guessing
 WASM_OUT=web/game.wasm
-WASM_EXEC_SRC=$(shell go env GOROOT)/lib/wasm/wasm_exec.js
+WASM_EXEC_SRC=$(shell go env GOROOT)/misc/wasm/wasm_exec.js
 WASM_EXEC_DST=web/wasm_exec.js
 
 help:
