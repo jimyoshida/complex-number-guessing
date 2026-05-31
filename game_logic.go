@@ -37,11 +37,13 @@ type ComparisonResult struct {
 func parseComplexNumber(input string) (complex128, error) {
 	input = strings.TrimSpace(input)
 
+	// Try parsing as complex number directly
 	c, err := strconv.ParseComplex("("+input+")", 128)
 	if err == nil {
 		return c, nil
 	}
 
+	// Try parsing as real number only
 	r, err := strconv.ParseFloat(input, 64)
 	if err == nil {
 		return complex(r, 0), nil
@@ -86,6 +88,7 @@ func checkAngle(guess, target complex128) AngleResult {
 	guessAngle := getAngle(guess)
 	targetAngle := getAngle(target)
 
+	// Calculate the angular difference, normalized to (-π, π]
 	diff := targetAngle - guessAngle
 	for diff > math.Pi {
 		diff -= 2 * math.Pi
