@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complex Number Guessing Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="loading">⏳ Loading game...</div>
+
+  <div id="terminal" class="hidden">
+    <h1 id="title">🎮 Complex Number Guessing Game</h1>
+    <p id="instructions"></p>
+
+    <div id="history"></div>
+
+    <div id="input-row">
+      <span id="prompt"></span>
+      <input type="text" id="guess-input" placeholder="e.g. 5+3i" autocomplete="off" disabled>
+      <button id="submit-btn" disabled>Enter</button>
+    </div>
+
+    <div id="status"></div>
+
+    <button id="new-game-btn">New Game</button>
+  </div>
+
+  <script src="wasm_exec.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

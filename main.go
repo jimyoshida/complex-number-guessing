@@ -1,3 +1,5 @@
+//go:build !wasm
+
 package main
 
 import (
@@ -6,131 +8,23 @@ import (
 	"math"
 	"math/rand"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
 )
 
-const (
-	minValue   = 1
-	maxValue   = 10
-	maxGuesses = 7
-)
-
-type GuessResult int
-
-const (
-	TooLow GuessResult = iota
-	TooHigh
-	Correct
-)
-
-type AngleResult int
-
-const (
-	Left AngleResult = iota
-	Right
-	CorrectAngle
-)
-
-type ComparisonResult struct {
-	Modulus GuessResult
-	Angle   AngleResult
-}
-
-func parseComplexNumber(input string) (complex128, error) {
-	input = strings.TrimSpace(input)
-
-	// Try parsing as complex number directly
-	c, err := strconv.ParseComplex("("+input+")", 128)
-	if err == nil {
-		return c, nil
-	}
-
-	// Try parsing as real number only
-	real, err := strconv.ParseFloat(input, 64)
-	if err == nil {
-		return complex(real, 0), nil
-	}
-
-	return 0, fmt.Errorf("please enter a valid complex number (e.g., 5+3i, 5, or 3i)")
-}
-
-func validateGuess(guess complex128) error {
-	real := real(guess)
-	imag := imag(guess)
-
-	if real < minValue || real > maxValue || imag < minValue || imag > maxValue {
-		return fmt.Errorf("please enter a complex number with both real and imaginary parts between %d and %d (e.g., 5+3i)", minValue, maxValue)
-	}
-	return nil
-}
-
-func getModulus(c complex128) float64 {
-	return math.Sqrt(real(c)*real(c) + imag(c)*imag(c))
-}
-
-func getAngle(c complex128) float64 {
-	return math.Atan2(imag(c), real(c))
-}
-
-func checkModulus(guess, target complex128) GuessResult {
-	guessModulus := getModulus(guess)
-	targetModulus := getModulus(target)
-
-	const epsilon = 1e-9
-	if math.Abs(guessModulus-targetModulus) < epsilon {
-		return Correct
-	}
-	if guessModulus < targetModulus {
-		return TooLow
-	}
-	return TooHigh
-}
-
-func checkAngle(guess, target complex128) AngleResult {
-	guessAngle := getAngle(guess)
-	targetAngle := getAngle(target)
-
-	// Calculate the angular difference, normalized to (-π, π]
-	diff := targetAngle - guessAngle
-	for diff > math.Pi {
-		diff -= 2 * math.Pi
-	}
-	for diff <= -math.Pi {
-		diff += 2 * math.Pi
-	}
-
-	const epsilon = 1e-9
-	if math.Abs(diff) < epsilon {
-		return CorrectAngle
-	}
-	if diff > 0 {
-		return Left
-	}
-	return Right
-}
-
-func checkGuess(guess, target complex128) ComparisonResult {
-	return ComparisonResult{
-		Modulus: checkModulus(guess, target),
-		Angle:   checkAngle(guess, target),
-	}
-}
-
 func main() {
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	scanner := bufio.NewScanner(os.Stdin)
 
 	titleStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("205")). // Magenta
+		Foreground(lipgloss.Color("205")).
 		Bold(true).
 		Padding(1, 2)
 
 	instructionStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("86")) // Cyan
+		Foreground(lipgloss.Color("86"))
 
 	fmt.Println(titleStyle.Render("🎮 Complex Number Guessing Game"))
 	fmt.Println(instructionStyle.Render(
@@ -139,33 +33,32 @@ func main() {
 			"Enter guesses in format: 5+3i\n", minValue, minValue, maxValue, maxValue, maxGuesses)))
 	fmt.Println()
 
-	// Generate random complex number
 	realPart := rng.Intn(maxValue-minValue+1) + minValue
 	imagPart := rng.Intn(maxValue-minValue+1) + minValue
 	target := complex(float64(realPart), float64(imagPart))
 	guesses := 0
 
 	promptStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("226")). // Yellow
+		Foreground(lipgloss.Color("226")).
 		Bold(true)
 
 	successStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("46")). // Bright green
+		Foreground(lipgloss.Color("46")).
 		Bold(true)
 	modulusTooLowStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("196")) // Red
+		Foreground(lipgloss.Color("196"))
 	modulusTooHighStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("33")) // Blue
+		Foreground(lipgloss.Color("33"))
 	modulusCorrectStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("46")) // Bright green
+		Foreground(lipgloss.Color("46"))
 	angleTurnLeftStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("205")) // Pink/Magenta
+		Foreground(lipgloss.Color("205"))
 	angleTurnRightStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("117")) // Light blue
+		Foreground(lipgloss.Color("117"))
 	angleCorrectStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("46")) // Bright green
+		Foreground(lipgloss.Color("46"))
 	loseStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("196")). // Bright red
+		Foreground(lipgloss.Color("196")).
 		Bold(true)
 
 	for guesses < maxGuesses {
@@ -194,14 +87,12 @@ func main() {
 
 		result := checkGuess(guess, target)
 
-		// Check if both modulus and angle are correct
 		if result.Modulus == Correct && result.Angle == CorrectAngle {
 			fmt.Println(successStyle.Render(fmt.Sprintf("\n✅ Correct! The number was %v.", target)))
 			fmt.Println(successStyle.Render(fmt.Sprintf("🎉 You got it in %d guess(es)!", guesses)))
 			return
 		}
 
-		// Show modulus feedback
 		var modulusFeedback string
 		var modulusResultStyle lipgloss.Style
 		switch result.Modulus {
@@ -216,7 +107,6 @@ func main() {
 			modulusResultStyle = modulusCorrectStyle
 		}
 
-		// Show angle feedback
 		var angleFeedback string
 		var angleResultStyle lipgloss.Style
 		angleStr := fmt.Sprintf("(%.1f°)", math.Atan2(imag(guess), real(guess))*180/math.Pi)
