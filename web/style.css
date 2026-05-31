@@ -1,0 +1,163 @@
+:root {
+  --green:      #00ff5f;  /* color 46  — correct / win */
+  --red:        #ff0000;  /* color 196 — too low / error / lose */
+  --blue:       #0087ff;  /* color 33  — modulus too high */
+  --magenta:    #ff5fd7;  /* color 205 — title / angle left */
+  --lightblue:  #87d7ff;  /* color 117 — angle right */
+  --yellow:     #ffff00;  /* color 226 — prompt / input */
+  --cyan:       #5fd7d7;  /* color 86  — instructions */
+  --bg:         #0d0d0d;
+  --fg:         #cccccc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  margin: 0;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+}
+
+#terminal {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+#terminal.hidden,
+#loading.hidden {
+  display: none;
+}
+
+#loading {
+  color: var(--cyan);
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 1.1rem;
+}
+
+#title {
+  color: var(--magenta);
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 0.8rem;
+}
+
+#instructions {
+  color: var(--cyan);
+  margin: 0 0 1.2rem;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+#history {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+.guess-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+}
+
+.guess-num {
+  color: var(--fg);
+  min-width: 5rem;
+}
+
+.modulus-too_low   { color: var(--red); }
+.modulus-too_high  { color: var(--blue); }
+.modulus-correct   { color: var(--green); }
+.angle-left        { color: var(--magenta); }
+.angle-right       { color: var(--lightblue); }
+.angle-correct     { color: var(--green); }
+
+.error-line {
+  color: var(--red);
+}
+
+#input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+#prompt {
+  color: var(--yellow);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#guess-input {
+  background: #1a1a1a;
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.3rem 0.6rem;
+  width: 130px;
+  outline: none;
+  caret-color: var(--yellow);
+}
+
+#guess-input:disabled {
+  border-color: #444;
+  color: #555;
+  caret-color: #555;
+}
+
+#guess-input::placeholder {
+  color: #555;
+}
+
+button {
+  background: transparent;
+  border: 1px solid var(--yellow);
+  color: var(--yellow);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--yellow);
+  color: var(--bg);
+}
+
+button:disabled {
+  border-color: #444;
+  color: #555;
+  cursor: not-allowed;
+}
+
+#new-game-btn {
+  margin-top: 0.5rem;
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+#new-game-btn:hover {
+  background: var(--cyan);
+  color: var(--bg);
+}
+
+#status {
+  margin-bottom: 0.8rem;
+  font-weight: bold;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.win  { color: var(--green); }
+.lose { color: var(--red); }
