@@ -53,7 +53,7 @@ Vanilla JS + CSS. Calls `newGame()` and `makeGuess(input)` synchronously after W
 
 ## Testing Conventions
 
-Table-driven tests with `t.Run` in [main_test.go](main_test.go). Tests cover `parseComplexNumber`, `validateGuess`, `checkModulus`, `checkAngle`, plus constants and enum value pins.
+Table-driven tests with `t.Run` in [game_logic_test.go](game_logic_test.go). Tests cover `parseComplexNumber`, `validateGuess`, `checkModulus`, `checkAngle`, plus constants and enum value pins.
 
 Run tests before committing: `make test`
 
